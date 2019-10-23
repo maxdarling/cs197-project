@@ -7,4 +7,5 @@ hash table implementations in read-write databases more effecient.
 Methods:
 
 We are currently using C++ to implement the hash tables since C++ has efficiency 
-guarantees and was the language used by our nearest neighbor paper. 
+guarantees and was the language used by our nearest neighbor paper called 
+A seven dimensional analysis of hasing methods and its implications on the querying process. 
