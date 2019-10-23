@@ -6,4 +6,5 @@ hash table implementations in RW databases more effecient.
 
 Methods:
 
-We are currently using C++ to implement the hash tables.
+We are currently using C++ to implement the hash tables since C++ has efficiency 
+guarantees and was the language used by our nearest neighbor paper.
