@@ -1,0 +1,10 @@
+CC=gcc
+CFLAGS=-I.
+DEPS = adaptive_hash.h
+OBJ = test_harness.o adaptive_hash.o 
+
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+test_harness: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS)
