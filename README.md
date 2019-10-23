@@ -15,4 +15,5 @@ Methods:
 
 We are currently using C++ to implement the hash tables since C++ has efficiency 
 guarantees and was the language used by our nearest neighbor paper called 
-A seven dimensional analysis of hasing methods and its implications on the querying process. 
+A Seven Dimensional Analysis of Hashing Methods and Its Implications on the Querying Process
+which can be found here: http://www.vldb.org/pvldb/vol9/p96-richter.pdf. 
