@@ -6,10 +6,9 @@ hash table implementations in read-write databases more effecient.
 
 Note:
 
-If you wish to compile this locally, please use the one-liner located in the file name
-MakefileLite. Currently, there are linking issues with the other two Makefiles. While 
-we resolve these issues, please use the one-liner. Sorry for the inconvenience.
+***UPDATE*** 
 
+The Makefile now works! You can still use the one-liner in MakefileLite if you wish.
 
 Methods:
 
