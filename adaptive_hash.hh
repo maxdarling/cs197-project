@@ -30,6 +30,8 @@ public:
 	std::string curr_hash_scheme();
 	//add function for hash function
 	size_t our_hash_function(char input);
+	template<typename H, typename T>
+	void hash_scheme(std::pair<T, H>kv_pair);
 	template<typename H>
 	size_t hash_function(H input); //possible inputs: number, char/str, random struct
 	void make_hash_table(std::string hash_string, std::vector<char>& hash_table);

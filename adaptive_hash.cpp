@@ -21,8 +21,12 @@ size_t AdaptiveHashTable::our_hash_function(char input) {
 	return (int)input;
 }
 
+template<typename H, typename T>
+void AdaptiveHashTable::hash_scheme(std::pair<T, H>kv_pair) { //uses key to insert into table
+} 
+
 template<typename H>
-size_t AdaptiveHashTable::hash_function(H input) {
+size_t AdaptiveHashTable::hash_function(H input) { //generates key
 	if (preferredHash == "LP") {
 		
 	}
