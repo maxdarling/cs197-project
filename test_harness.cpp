@@ -11,7 +11,7 @@ int main(int argc, char*argv[]) {
 }
 
 void create_simple_hash_table() { //assumes all input is valid
-	AdaptiveHashTable test{1, "Identity"};
+	AdaptiveHashTable test{1, "Identity", "Identity", 8};
 	std::cout << "Current Hash Scheme: " << test.curr_hash_scheme() << std::endl;
 	std::cout << "Current distribution type: " << test.curr_distr_type() << std::endl;
 	std::string input_str = "abcdefgh";
