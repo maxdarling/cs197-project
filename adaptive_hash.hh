@@ -24,7 +24,7 @@ private:
 		size_t table_size;
 		std::string hash_scheme;
 		std::string hash_func;
-		std::unordered_map<size_t, H>hash_table{};
+		std::unordered_map<size_t, H>hash_table;
 	};
 	
 public:
@@ -36,6 +36,7 @@ public:
 	void get_hash_scheme(std::pair<T, H>kv_pair);
 	template<typename H>
 	size_t get_hash_function(H input); //possible inputs: number, char/str, random struct
+	//template<typename H>
 	void make_hash_table(std::string hash_string, std::vector<char>& hash_table);
 };
 

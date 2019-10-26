@@ -36,12 +36,16 @@ size_t AdaptiveHashTable::get_hash_function(H input) { //generates key
 	return 0;
 }
 
+//template<typename H>
 void AdaptiveHashTable::make_hash_table(std::string hash_string, std::vector<char>& hash_table){
 	//get_hash_function<char>('a');
+	//std::unordered_map<size_t, H>hashtable;
+	//HashTable ht{hash_string.size(), preferredHash, preferredFunc, hashtable};
 	size_t index0 =(int)'a';
 	for (size_t i = 0; i < hash_string.size(); i++) {
 		size_t hash_index = our_hash_function(hash_string[i]);
 		size_t vec_index = hash_index - index0;
 		hash_table[vec_index] = hash_string[i];
 	}
+	//return ht;
 }
