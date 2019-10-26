@@ -1,5 +1,6 @@
 #CS 197 project initial Makefile
 #Thanks to cs166 for the template makefile
+#TODO: Have it make when .hh file is edited
 	
 TARGET_CPPS := test_harness.cpp adaptive_hash.cpp 
 CPP_FILES := $(filter-out $(TARGET_CPPS),$(wildcard *.cpp))

@@ -4,12 +4,17 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <unordered_map>
 
 class AdaptiveHashTable{
 private:
 	int distrType; //Dense = -1, Sparse = 0, Grid = 1
 	std::string preferredHash;
-
+	template<typename H, typename T>
+	struct HashTable{
+		std::unordered_map<H, T>hash_table{};
+	};
+	
 public:
 	AdaptiveHashTable(int distr, std::string specificHash); //return value must be hashtable
 	std::string curr_distr_type();
