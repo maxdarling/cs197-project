@@ -1,6 +1,4 @@
 #include "adaptive_hash.hh"
-#include <math.h>
-
 
 AdaptiveHashTable::AdaptiveHashTable(int distr, std::string specificHash, std::string specificFunc, size_t my_size):
 	distrType(distr),
@@ -28,18 +26,18 @@ unsigned int countBits (unsigned int number) {
 }
 
 template<typename H, typename T>
-void AdaptiveHashTable::hash_scheme(std::pair<T, H>kv_pair) { //uses key to insert into table
-	//if (preferredHash == "LP") linprobing(kv_pair);
+void AdaptiveHashTable::get_hash_scheme(std::pair<T, H>kv_pair) { //uses key to insert into table
+	(void)kv_pair;
 } 
 
 template<typename H>
-size_t AdaptiveHashTable::hash_function(H input) { //generates key
+size_t AdaptiveHashTable::get_hash_function(H input) { //generates key
 	//if (preferredFunc == "M-S") multshift(input);
 	return 0;
 }
 
 void AdaptiveHashTable::make_hash_table(std::string hash_string, std::vector<char>& hash_table){
-	hash_function<char>('a');
+	//get_hash_function<char>('a');
 	size_t index0 =(int)'a';
 	for (size_t i = 0; i < hash_string.size(); i++) {
 		size_t hash_index = our_hash_function(hash_string[i]);
