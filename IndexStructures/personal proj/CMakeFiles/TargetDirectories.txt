@@ -1,0 +1,3 @@
+/Users/max/CS/Courses/197/IndexStructures/personal proj/CMakeFiles/rebuild_cache.dir
+/Users/max/CS/Courses/197/IndexStructures/personal proj/CMakeFiles/edit_cache.dir
+/Users/max/CS/Courses/197/IndexStructures/personal proj/CMakeFiles/IndexStructure.dir
