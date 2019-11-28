@@ -11,16 +11,10 @@ int main(int argc, char*argv[]) {
 }
 
 void create_simple_hash_table() { //assumes all input is valid
-	AdaptiveHashTable test{1, "Identity", "Identity", 8};
-	std::cout << "Current Hash Scheme: " << test.curr_hash_scheme() << std::endl;
-	std::cout << "Current distribution type: " << test.curr_distr_type() << std::endl;
-	std::string input_str = "abcdefgh";
-	std::vector<char> our_hash_table(input_str.size(), '0');
-	/*HashTable ht =*/ test.make_hash_table(input_str, our_hash_table);
-	std::cout << "Here are the entries in your hash table: " << std::endl;
-        for (size_t i = 0; i < our_hash_table.size(); i++) {
-		std::cout << i << " -> " << our_hash_table[i] << std::endl;
-	}	
+	AdaptiveHashTable test;
+	std::cout << "Current Hash Scheme: " << test.get_hash_scheme() << std::endl;
+	std::cout << "Current distribution type: " << test.get_density() << std::endl;
+	test.make_hash_table();
 }
 
 

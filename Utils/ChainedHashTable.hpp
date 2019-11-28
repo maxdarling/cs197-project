@@ -5,9 +5,9 @@
 #ifndef INDEXSTRUCTURE_CHAINEDHASHMAP_HPP
 #define INDEXSTRUCTURE_CHAINEDHASHMAP_HPP
 
-#include "../../Util/Defines.hpp"
+#include "Defines.hpp"
 #include "OpenTableConstants.hpp"
-#include "../../Util/Types.hpp"
+#include "Types.hpp"
 #include <cmath>
 #include <cstddef>
 #include <iostream>
