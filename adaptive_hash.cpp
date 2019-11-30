@@ -13,7 +13,26 @@ AdaptiveHashTable::AdaptiveHashTable():
 		make_hash_table();
 	}
 
-//Function credit: GeeksForGeeks - MOVE TO HASH FUNCTION H
+void AdaptiveHashTable::update_load_factor() {
+	load_factor = table_capacity/table_size;
+}
+
+void AdaptiveHashTable::update_lookup_ratio() {
+ 	//update lookup ratio
+}
+
+void AdaptiveHashTable::update_density() {
+	//run python script 
+}
+
+void AdaptiveHashTable::update_read_time() {
+	//read_time = 
+}
+
+void AdaptiveHashTable::update_write_time() {
+	//write_time = 
+}
+
 void AdaptiveHashTable::make_hash_table(){
 	if (currHash == "LP") {
 
@@ -27,4 +46,12 @@ void AdaptiveHashTable::make_hash_table(){
 
 	}
 
+}
+
+bool AdaptiveHashTable::assess_switching() {
+	//cost function
+	if (load_factor < .5) return false;
+	int cost_func = get_read_time() + get_write_time() - /*REHASH_TIME()*/;	
+	//assess kde py
+	
 }
