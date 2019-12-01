@@ -26,7 +26,7 @@ set(SOURCE_FILES
     include/Util/Timer.hpp
     include/Util/Types.hpp
     include/Util/Zipf.h
-    personal\ proj/test.cpp)
+    ./test.cpp)
 
 include_directories(
     include/Adapter

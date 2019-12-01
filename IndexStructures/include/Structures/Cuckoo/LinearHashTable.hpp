@@ -92,6 +92,35 @@ private:
 #endif
     }
 public:
+    
+    bool isFull() {
+           return _count >= _highWatermark;
+    }
+    
+    size_t getSizeLog2() {
+        return _tableSizeLog2;
+    }
+    
+    //basic attempt at standardizing the insert function names
+    void INS(const K& key, const V& val) {
+        put(key, val);
+    }
+    
+    //transferHash: iterate over elements of current table, and use the provided
+    //class's .INS() on each to populate new table.
+    template<class C>
+    void transferHash(C& new_table) {
+        Entry* pEntry = _table;
+        size_t total = 0;
+        while (pEntry < _table + getTotalNumberOfSlots()) {
+            // <- note below: it will ignore whatever keys equal Empty (ie. 0)
+            if (EXP_TRUE(pEntry->key != EMPTY)) {
+                new_table->INS(pEntry->key, pEntry->value);
+            }
+            ++pEntry;
+        }
+    }
+    
     void printElems() {
         Entry* pEntry = _table;
         size_t total = 0;

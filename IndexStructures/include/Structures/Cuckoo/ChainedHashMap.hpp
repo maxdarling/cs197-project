@@ -5,9 +5,9 @@
 #ifndef INDEXSTRUCTURE_CHAINEDHASHMAP_HPP
 #define INDEXSTRUCTURE_CHAINEDHASHMAP_HPP
 
-#include "../../Util/Defines.hpp"
+#include "Defines.hpp"
 #include "OpenTableConstants.hpp"
-#include "../../Util/Types.hpp"
+#include <Types.hpp>
 #include <cmath>
 #include <cstddef>
 #include <iostream>
@@ -281,7 +281,7 @@ public:
     ~ChainedHashMap() {
         delete[] map;
     }
-
+    
     void rehash(size_t newSizePow2) {
         Entry **oldMap = map;
         uint64_t oldArraySize = arraySize;
@@ -324,10 +324,19 @@ public:
         throw;
     }
 
+    bool isFull() {
+        return count >= highWatermark;
+    }
+    
+    uint64_t getSizeLog2() {
+        return arraySizeLog2;
+    }
+    
     void putValue(MWord key, MWord value) {
 #ifdef DYNAMIC_GROW
         if (count >= highWatermark) {
-            std::cout<<"rehash from 2^"<<arraySizeLog2<<"to 2^"<<arraySizeLog2+1<<std::endl;
+            //Changed
+//            std::cout<<"rehash from 2^"<<arraySizeLog2<<"to 2^"<<arraySizeLog2+1<<std::endl;
             rehash(arraySizeLog2 + 1);
         }
 #endif
@@ -354,6 +363,37 @@ public:
         e->value = value;
         *b = e;
     }
+    
+    //todo: delete this and replace with isFull() method.
+    bool putValue2(MWord key, MWord value) {
+            if (count >= highWatermark) {
+                return true;
+                rehash(arraySizeLog2 + 1);
+            }
+            const size_t idx = hasher(key) >> (hasher.hashBits() - arraySizeLog2);
+            Entry **const b = map + idx;
+            Entry *e = *b;
+            //go through chain to check for duplicate key
+            while (e != nullptr) {
+                if (key == e->key) {
+                    e->value = value;
+                    return false;
+                } else {
+                    e = e->next;
+                }
+            }
+            //insert
+            ++count;
+            //alloc new
+
+            e = alloc.newEntry();
+            //setup new
+            e->next = *b;
+            e->key = key;
+            e->value = value;
+            *b = e;
+            return false;
+        }
 
     bool remove(MWord key) {
 #ifdef DYNAMIC_GROW
@@ -388,6 +428,27 @@ public:
     //Changed
     uint64_t getArraySize() {
         return arraySize;
+    }
+    
+    //basic attempt at standardizing the insert function names
+    void INS (MWord key, MWord val) {
+        putValue(key, val);
+    }
+    
+    //transferHash: iterate over elements of current table, and use the provided
+    //class's .INS() on each to populate new table.
+    template<class C>
+    void transferHash (C& new_table) {
+        size_t total = 0;
+        for (size_t i=0; i<arraySize; i++){
+            Entry* p = map[i];
+            if(p) {
+                while (p!= nullptr){
+                    new_table->INS(p->getKey(), p->getValue());
+                    p = p->next;
+                }
+            }
+        }
     }
     
     //Changed
