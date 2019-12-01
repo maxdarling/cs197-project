@@ -14,14 +14,14 @@ guarantees and was the language used by our nearest neighbor paper called
 A Seven Dimensional Analysis of Hashing Methods and Its Implications on the Querying Process
 which can be found here: http://www.vldb.org/pvldb/vol9/p96-richter.pdf, we decided it was the 
 best choice. The source code for the hashtables, which are all of the form [Table Name Here].hpp all 
-come from our parent paper's authors, and was graciously sent to us by Professor Dittrich. 
+come from our parent paper's authors and was graciously sent to us by Professor Dittrich. 
 
 ***Data Generation***
 
 Data generation for 2 data distrubutions are supported - `dense` and `sparse`. 
 `dense` is defined as keys `[1,n]` for a given `n`.
 `sparse` is defined as `n` random keys in the range `[1,n]`
-
+ed
 `data.py` is the file to generate data sets. Usage is as follows: 
 
 `python3 data.py -[sparse/dense] n`.
