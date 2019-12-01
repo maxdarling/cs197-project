@@ -16,6 +16,8 @@ which can be found here: http://www.vldb.org/pvldb/vol9/p96-richter.pdf, we deci
 best choice. The source code for the hashtables, which are all of the form [Table Name Here].hpp all 
 come from our parent paper's authors and was graciously sent to us by Professor Dittrich. 
 
+Our novel contribution is the construction of a hashtable implementation which can dynamically switch
+hashscheme/hashfunction combination depending on the given situation.
 ***Data Generation***
 
 Data generation for 2 data distrubutions are supported - `dense` and `sparse`. 
