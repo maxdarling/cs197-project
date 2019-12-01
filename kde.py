@@ -1,25 +1,44 @@
-%matplotlib inline
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()
 import numpy as np
+import random
+import sys
+from sklearn.neighbors import KernelDensity
 
-
-def make_data(N, f=0.3, rseed=1):
-    rand = np.random.RandomState(rseed)
-    x = rand.randn(N)
-    x[int(f * N):] += 5
+def dense_data(n):
+    x = []
+    for i in range(i, n+1):
+        x.append(i)
     return x
 
-x = make_data(1000)
-hist = plt.hist(x, bins=30, normed=True)
-density, bins, patches = hist
-widths = bins[1:] - bins[:-1]
-(density * widths).sum()
-x = make_data(20)
-bins = np.linspace(-5, 10, 10)
-fig.subplots_adjust(wspace=0.05)
-for i, offset in enumerate([0.0, 0.6]):
-    ax[i].hist(x, bins=bins + offset, normed=True)
-    ax[i].plot(x, np.full_like(x, -0.01), '|k',
-               markeredgewidth=1)
+def sparse_data(n):
+    x = []
+    for i in range(i, n+1):
+        number = random.randrange(1, n)
+        x.append(number)
+    return x
 
+def make_data(N, f=0.3, rseed = 1):
+    rand = np.random.RandomState(rseed)
+    x = rand.randn(N)
+    x[int(f*N):] += 5
+    return x
+
+data = dense_data(1500)
+
+kde = KernelDensity(bandwidth=1.0, kernel='gaussian')
+
+logprob = kde.score_samples(data[:, None])
+
+plt.fill_between(data, np.exp(logprob), alpha=0.5)
+plt.plot(x, np.full_like(x, -0.01), '|k', markeredgewidth=1)
+plt.ylim(-0.02, 0.22)
+
+kde = KernelDensity(bandwidth = 1.0, kernel='gaussian')
+kde.fit(x[:, None])
+
+logprob = kde.score_samples(x_d[:, None])
+
+plt.fill_between(x_d, np.exp(logprob), alpha=0.5)
+plt.plot(x, np.full_like(x, -0.01), '|k',  markeredgewidth=1)
+plt.ylim(-0.02, 0.22)

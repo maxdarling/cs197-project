@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <variant>
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
@@ -28,23 +29,17 @@ private:
 	size_t table_density; // sparse = 0 <= t_d <= 1 = dense
 	size_t read_time;
 	size_t write_time;
-	enum HashFunction {
+	size_t universal_table_index;
+	enum HashFunc {
 		MultiplicativeHash, 
 		TabulationHash, 
 		MultiplyAddHash, 
 		MurmurHash
 	};
-	enum HashSchemes(HashFunction) {
-		ChainedHashMap<HashFunction>,
-		LinearHashTable<int, int, HashFunction, 0L, false>,
-		QuadraticHashTable<int, int, HashFunction, 0L, false>
-	};
-	struct HashTable{
-		size_t index;
-		//std::unordered_map<size_t index, vector< ChaindHashMap<HashFunction> > table;
-		ChainedHashMap<HashFunction> table;
-	};
-	HashTable the_table; //better way to declare this
+	ChainedHashMap<HashFunc>* table1;
+	LinearHashTable<int, int, HashFunc, 0L, false>* table2;
+	QuadraticHashTable<int, int, HashFunc, 0L, false>* table3;
+
 public:
 	//AdaptiveHashTable(some data);
 	AdaptiveHashTable(); 
@@ -58,7 +53,7 @@ public:
 	size_t get_density() {return table_density; };
 	size_t get_read_time() {return read_time; };
 	size_t get_write_time() {return write_time; };
- 	
+        size_t get_rehash_time() {return get_write_time()*table_size;};	
 	//update the appropriate variables
 	void update_load_factor();
 	void update_lookup_ratio();
@@ -67,12 +62,13 @@ public:
 	void update_write_time();
 
 	//other important functions
-	void make_hash_table();
+	void make_hash_table(size_t index);
 	void print_out_hash_table() {the_table.table.printElems()};
 	void insert_into_table(int Key, int Value) {the_table.table.put(Key, Value);};
-	void remove_from_table(int Key) {the_table.table.remove(Key);};
+	void remove_from_table(int Key) {all_table[index].remove(Key);};
 	void read_from_table(int Key) {the_table.table.get(Key);};
 	bool assess_switching();
+	bool switch_tables();
 };
 
 #endif
