@@ -1,0 +1,9 @@
+This branch is meant to be used with cmake! It's per kexin's reccomendation, and it's quite easy!
+
+Steps: 
+1. install cmake 
+2. nagivate to IndexStructures directory (notice that there's a CMakeLists.txt in here. that's like a surrogate makefile). 
+3. type 'cmake .'
+4. a build folder should get made in the current directory, as long as some other cmake files. 
+5. that's it! run 'make' whenever and it'll work (it creates an executable called "IndexStructures". 
+just run './IndexStructures' and voila. 
