@@ -435,8 +435,10 @@ public:
             }
         }
     }
-
-    size_t getCount() const {
+    size_t getCount() {
+	    return _count;
+    }
+    size_t size/*getCount*/() { //I'm pretty sure this is the size fxn
         return _count;
     };
 
