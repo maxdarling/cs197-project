@@ -3,6 +3,7 @@
 class GenericHashTable 
 {
   public:
+    // add error checking to remove, put fxns
     virtual void remove(uint64_t K) = 0;
     virtual uint64_t get(uint64_t K) = 0;
     //add error checking to remove & put function

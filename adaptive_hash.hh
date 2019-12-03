@@ -46,7 +46,7 @@ public:
 	size_t get_density() {return table_density; };
 	size_t get_read_time() {return read_time; };
 	size_t get_write_time() {return write_time; };
-        size_t get_rehash_time() {return get_write_time()*table_size;};	
+        size_t get_rehash_time() {return write_time*table_size;};	
 	//update the appropriate variables
 	void update_load_factor();
 	void update_lookup_ratio();
@@ -56,9 +56,9 @@ public:
 	void make_hash_table();
 	void print_out_hash_table() {generic_table->printElems();};
 
-	void insert_into_table(int Key, int Value) {generic_table->put(Key, Value);};
-	//void remove_from_table(int Key) {generic_table->remove(Key);};
-	//void read_from_table(int Key) {generic_table->get(Key);};
+	void insert(uint64_t Key, uint64_t Value) {generic_table->put(Key, Value);};
+	void remove(uint64_t Key) {generic_table->remove(Key);};
+	uint64_t read(uint64_t Key) {return generic_table->get(Key);};
 	
 	bool assess_switching();
 	bool switch_tables();
