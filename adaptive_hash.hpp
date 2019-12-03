@@ -16,7 +16,6 @@
 #include "Utils/ChainedHashTable.hpp"
 //#include "Utils/RobinDistanceHashTable.hpp"
 #include <math.h>
-#include <any>
 #include <cmath>
 //#include "Utils/GenericHashTable.hpp"
 
@@ -34,10 +33,9 @@ private:
 	size_t read_time;
 	size_t write_time;
 	size_t universal_table_index;
-	std::map<std::string, std::vector<std::any> > hash_vec{};
 
 public:
-    AdaptiveHashTable(string type = "LH", size_t initial_size):
+    AdaptiveHashTable(size_t initial_size, std::string type = "LH"):
     curr_pair(type, 1),
     lookup_ratio(0),
     load_factor(0),
@@ -51,7 +49,6 @@ public:
 	//get all the appropriate variables
 	size_t get_lookup_ratio() {return lookup_ratio; };
 	size_t get_load_factor() {return load_factor; };
-	//size_t get_table_size() {return hash_vec[curr_pair.first][curr_pair.second]->size(); };
 	size_t get_table_capacity() {return table_capacity; };
 	size_t get_density() {return table_density; };
 	size_t get_read_time() {return read_time; };

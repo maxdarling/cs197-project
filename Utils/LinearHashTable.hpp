@@ -107,7 +107,6 @@ public:
     template<class C>
     void transferHash(C& new_table) {
         Entry* pEntry = _table;
-        size_t total = 0;
         while (pEntry < _table + getTotalNumberOfSlots()) {
             // <- note below: it will ignore whatever keys equal Empty (ie. 0)
             if (EXP_TRUE(pEntry->key != EMPTY)) {

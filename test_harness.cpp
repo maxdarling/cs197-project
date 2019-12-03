@@ -1,7 +1,6 @@
-#include "adaptive_hash.hh"
+#include "adaptive_hash.hpp"
 #include <iostream>
 #include <vector>
-
 
 
 //basic test to ensure nothing is broken
@@ -14,6 +13,8 @@ void create_simple_hash_table() { //assumes all input is valid
     test.printElems();
     
 }
+
+
 
 int main(int argc, char*argv[]) {
     

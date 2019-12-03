@@ -408,7 +408,6 @@ public:
     
     template<class C>
     void transferHash (C& new_table) {
-        size_t total = 0;
         for (size_t i=0; i<arraySize; i++){
             Entry* p = map[i];
             if(p) {
