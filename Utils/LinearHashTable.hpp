@@ -7,7 +7,7 @@
 
 #ifndef LINEARHASHTABLE_HPP
 #define LINEARHASHTABLE_HPP
-
+#include "GenericHashTable.hpp"
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -25,7 +25,7 @@
 *
 */
 template<class K, class V, class H, K EMPTY, bool ROBIN = true>
-class LinearHashTable {
+class LinearHashTable : public GenericHashTable {
 
 private:
 #ifdef DYNAMIC_GROW
@@ -247,7 +247,7 @@ private:
         const uint64_t lookupKeyHashIdx =
                 _hasher(key) >> (divisionShift);//TODO change this shift if not using multiplicative hashing?
         uint64_t curIdx = lookupKeyHashIdx; // & (moduloMask);
-        uint64_t iter = 0;
+        //uint64_t iter = 0;
 #ifdef LH_DEBUG_PROBE_COUNT
         uintptr_t lastCL = 0;
 #endif

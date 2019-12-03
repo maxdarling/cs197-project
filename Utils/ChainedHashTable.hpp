@@ -8,6 +8,7 @@
 #include "Defines.hpp"
 #include "OpenTableConstants.hpp"
 #include "Types.hpp"
+#include "Hash_Functions.hpp"
 #include <cmath>
 #include <cstddef>
 #include <iostream>

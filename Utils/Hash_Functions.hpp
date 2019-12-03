@@ -6,10 +6,42 @@
 #include <random>
 #include <cstdio>
 #include <cassert>
-
+#include <iostream>
 #include "Types.hpp"
 
-class MurmurHash3Finalizer {
+enum class HashFunc{
+	MurmurHash,
+	MultiplicativeHash,
+	MultiplyAddHash,
+	TabulationHash
+};
+
+class AllHashFunctions 
+{
+    public:
+	void printHere()
+	{
+	  std::cout << "GENERALIZED!" << std::endl;
+	}
+	uint64_t operator ()(const uint64_t &key) const {
+		std::cout << "DEFUALT " << std::endl;
+        return key * 11400714819323198485ULL; //golden ratio for 64 bits constant
+//		return key * 0xca1b9857a43d173ULL;
+    }
+
+    size_t hashBits() const {
+        return sizeof(MWord) * 8;
+    }
+
+    uint64_t withSeed(const uint64_t &key, const uint64_t &seed) const {
+	    std::cout << "DEFAULT " << std::endl;
+	    return key * seed;
+    }
+
+	virtual ~AllHashFunctions(){};
+};
+
+class MurmurHash3Finalizer : public AllHashFunctions {
 
 public:
 
@@ -55,7 +87,7 @@ public:
 
 };
 
-class MurmurHash {
+class MurmurHash : public AllHashFunctions{
 private:
     uint64_t MurmurHash64A(const void *key, size_t len, uint64_t seed) const {
         const uint64_t m = 0xc6a4a7935bd1e995ULL;
@@ -119,7 +151,7 @@ public:
     }
 };
 
-class MultiplicativeHash {
+class MultiplicativeHash : public AllHashFunctions {
 public:
     uint64_t operator ()(const uint64_t &key) const {
         return key * 11400714819323198485ULL; //golden ratio for 64 bits constant
@@ -135,7 +167,7 @@ public:
     }
 };
 
-class TabulationHash {
+class TabulationHash : public AllHashFunctions{
 private:
     uint64_t _tables[8][256];
     std::mt19937_64 _generator;
@@ -174,7 +206,7 @@ public:
     }
 };
 
-class MultiplyAddHash {
+class MultiplyAddHash : public AllHashFunctions{
 private:
 //	static constexpr uint64_t __attribute__((aligned(64)))  _seeds[6] = {9738047536068648934ULL, 16102444696661213356ULL, 15607049721585420932ULL, 8880781859566157380ULL, 14332494294243105906ULL, 6446204480539395894ULL};
     uint64_t __attribute__((aligned(64))) _seeds[6];

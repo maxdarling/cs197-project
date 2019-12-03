@@ -1,39 +1,35 @@
 #include "adaptive_hash.hh"
+#include <cmath>
 
-AdaptiveHashTable::AdaptiveHashTable():
-	currHash("LP"),
-	currFunc("M-S"),
+AdaptiveHashTable::AdaptiveHashTable(size_t initial_size):
+	curr_pair("LH", 1),
 	lookup_ratio(0),
 	load_factor(0),
 	table_size(0),
-	table_capacity(0),
+	table_capacity(initial_size),
 	table_density(0),
 	read_time(0),
 	write_time(0){
-		make_hash_table(1); //FIX DEFAULT 1 VALUE!
+		make_hash_table();
 	}
 
 void AdaptiveHashTable::update_load_factor() {
-	load_factor = table_capacity/table_size;
+	load_factor = table_size/table_capacity;
 }
 
 void AdaptiveHashTable::update_density() {
-	//run python script 
+	table_density = table_size/table_capacity;
 }
 
-void AdaptiveHashTable::make_hash_table(size_t index){
-	if (currHash == "LP") {
-		universal_table_index = 1;
-		table1 = new LinearHashTable<int, int, (HashFunc)index, 0L, false> hash_table;
-	} else if (currHash == "QP") {
-		universal_table_index = 2;
- 		table2 = new QuadraticHashTable<int, int, (HashFunc)index, 0L, false> hash_table;
-	} else if (currHash == "CH") {
-		universal_table_index = 3;
-		table3 = new ChainedHashMap<(HashFunc)index> hash_table; 
-	} else if (currHash == "RH") {
-		universal_table_index = 4;
-		//nothing here yet- the hpp file doesn't work
+
+void AdaptiveHashTable::make_hash_table(){
+	//HashFunc(curr_pair.second)
+	if (curr_pair.first == "CH") {
+		generic_table = new ChainedHashMap<MurmurHash>();
+	} else if (curr_pair.first == "LH") {
+ 	 	generic_table = new LinearHashTable<int, int, MurmurHash, 0L, false>();
+	} else if (curr_pair.first == "QH") {
+		generic_table = new QuadraticHashTable<int, int, MurmurHash, 0L, false>();
 	} else {
 		universal_table_index = -1;
 	}
@@ -41,15 +37,19 @@ void AdaptiveHashTable::make_hash_table(size_t index){
 }
 
 bool AdaptiveHashTable::assess_switching() {
-	//cost function
+	//cost function + density
 	if (load_factor < .5) return false;
-	int cost_func = get_read_time() + get_write_time() - get_rehash_time();	
-	//assess kde py
-	if (cost_func > 0) return true;
+	int cost_func = get_read_time() + get_write_time() - get_rehash_time();
+	size_t original_density = table_density;	
+	update_density();
+	bool density_changed = original_density;
+	//bool density_changed = abs(original_density-table_density) > (.5*original_density); 
+	if (cost_func > 0 || density_changed) return true;
 	return false;
 }
 
-bool switch_tables() {
+bool AdaptiveHashTable::switch_tables() {
 	if (!assess_switching()) return false;
-	
+	//switch tables`
+	return false;	
 }
