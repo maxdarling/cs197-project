@@ -370,9 +370,9 @@ public:
         getInternal<REMOVE>(key);
     }
 
-    Result get(const K &key) const {
+    uint64_t  get(uint64_t key) {
         auto nonConstThisP = const_cast<LinearHashTable<K, V, H, EMPTY, ROBIN> *> (this);
-        return nonConstThisP->getInternal(key);
+        return (uint64_t)nonConstThisP->getInternal(key).value;
     }
 
     V &operator[](K key) {

@@ -310,11 +310,11 @@ public:
     }
 
 
-    MWord get(MWord key) {
+    uint64_t get(uint64_t key) { //MWord
         Entry *e = map[hasher(key) >> (hasher.hashBits() - arraySizeLog2)];
         while (e != nullptr) {
             if (key == e->key) {
-                return e->value;
+                return (uint64_t)e->value;
             } else {
                 e = e->next;
             }
