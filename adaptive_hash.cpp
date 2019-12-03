@@ -25,9 +25,15 @@ void AdaptiveHashTable::update_density() {
 void AdaptiveHashTable::make_hash_table(){
 	//HashFunc(curr_pair.second)
 	if (curr_pair.first == "CH") {
-		generic_table = new ChainedHashMap<MurmurHash>();
+		if (curr_pair.second == 1) generic_table = new ChainedHashMap<MultiplicativeHash>();
+		else if (curr_pair.second == 2) generic_table = new ChainedHashMap<MultiplyAddHash>();
+		else if (curr_pair.second == 3) generic_table = new ChainedHashMap<MurmurHash>();
+		else generic_table = new ChainedHashMap<TabulationHash>();
 	} else if (curr_pair.first == "LH") {
- 	 	generic_table = new LinearHashTable<int, int, MurmurHash, 0L, false>();
+		if (curr_pair.second == 1) generic_table = new LinearHashTable<int, int, MultiplicativeHash, 0L, false>();
+		else if (curr_pair.second == 2) generic_table = new LinearHashTable<int, int, MultiplyAddHash, 0L, false>();
+		else if (curr_pair.second == 3) generic_table = new LinearHashTable<int, int, MurmurHash, 0L, false>();
+		else generic_table = new LinearHashTable<int,int, TabulationHash, 0L, false>();
 	} else if (curr_pair.first == "QH") {
 		//generic_table = new QuadraticHashTable<int, int, MurmurHash, 0L, false>();
 	} else {
@@ -36,7 +42,7 @@ void AdaptiveHashTable::make_hash_table(){
 
 }
 
-/*bool AdaptiveHashTable::assess_switching() {
+bool AdaptiveHashTable::assess_switching() {
 	//cost function + density
 	if (load_factor < .5) return false;
 	int cost_func = get_read_time() + get_write_time() - get_rehash_time();
@@ -50,6 +56,6 @@ void AdaptiveHashTable::make_hash_table(){
 
 bool AdaptiveHashTable::switch_tables() {
 	if (!assess_switching()) return false;
-	//switch tables`
-	return false;	
-}*/
+	//what should we switch to?
+	return true;	
+}
