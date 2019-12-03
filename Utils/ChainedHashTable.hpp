@@ -326,7 +326,7 @@ public:
         throw;
     }
 
-    void put(const int& key, const int& value) { //MWord
+    void put(uint64_t key, uint64_t value) { //MWord
 #ifdef DYNAMIC_GROW
         if (count >= highWatermark) {
             std::cout<<"rehash from 2^"<<arraySizeLog2<<"to 2^"<<arraySizeLog2+1<<std::endl;
@@ -357,7 +357,7 @@ public:
         *b = e;
     }
 
-    bool remove(MWord key) {
+    void remove(uint64_t key) {
 #ifdef DYNAMIC_GROW
         if (count <= lowWatermark) {
             rehash(arraySizeLog2 - 1);
@@ -378,13 +378,13 @@ public:
                 //free entry e
                 alloc.deleteEntry(e);
                 //
-                return true;
+                return;// true;
             } else {
                 prev = e;
                 e = e->next;
             }
         }
-        return false;
+        return;// false;
     }
     
     //Changed

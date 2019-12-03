@@ -362,12 +362,12 @@ public:
         throw; //TODO
     }
 
-    void put(const int &key, const int &val) {
-        putInternal({key, val});
+    void put(uint64_t key, uint64_t val) { //add error checking!!!!!
+        putInternal({(int)key, (int)val});
     }
 
-    Result remove(const K &key) {
-        return getInternal<REMOVE>(key);
+    void remove(uint64_t key) {
+        getInternal<REMOVE>(key);
     }
 
     Result get(const K &key) const {
