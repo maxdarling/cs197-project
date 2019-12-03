@@ -326,7 +326,7 @@ public:
         throw;
     }
 
-    void put(MWord key, MWord value) {
+    void put(const int& key, const int& value) { //MWord
 #ifdef DYNAMIC_GROW
         if (count >= highWatermark) {
             std::cout<<"rehash from 2^"<<arraySizeLog2<<"to 2^"<<arraySizeLog2+1<<std::endl;

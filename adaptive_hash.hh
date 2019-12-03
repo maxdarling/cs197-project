@@ -51,15 +51,15 @@ public:
 	void update_load_factor();
 	void update_lookup_ratio();
 	void update_density();
-	//void update_read_time();
-	//void update_write_time();
 
 	//other important functions
 	void make_hash_table();
 	void print_out_hash_table() {generic_table->printElems();};
-	/*void insert_into_table(int Key, int Value) {hash_vec[curr_pair.first][curr_pair.second]->put(Key, Value);};
-	void remove_from_table(int Key) {hash_vec[curr_pair.first][curr_pair.second]->remove(Key);};
-	void read_from_table(int Key) {hash_vec[curr_pair.first][curr_pair.second]->get(Key);};*/
+
+	void insert_into_table(int Key, int Value) {generic_table->put(Key, Value);};
+	//void remove_from_table(int Key) {generic_table->remove(Key);};
+	//void read_from_table(int Key) {generic_table->get(Key);};
+	
 	bool assess_switching();
 	bool switch_tables();
 };

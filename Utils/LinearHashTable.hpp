@@ -362,8 +362,8 @@ public:
         throw; //TODO
     }
 
-    Result put(const K &key, const V &val) {
-        return putInternal({key, val});
+    void put(const int &key, const int &val) {
+        putInternal({key, val});
     }
 
     Result remove(const K &key) {
