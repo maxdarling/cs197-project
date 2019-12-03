@@ -8,6 +8,7 @@
 #ifndef QUADRATICHASHTABLE_HPP
 #define QUADRATICHASHTABLE_HPP
 
+//#include "GenericHashTable.hpp"
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -27,7 +28,7 @@
  * 
  */
 template<class K, class V, class H, K EMPTY, K DELETED>
-class QuadraticHashTable {
+class QuadraticHashTable : public GenericHashTable {
 
 private:
 #ifdef DYNAMIC_GROW

@@ -9,6 +9,7 @@
 #include "OpenTableConstants.hpp"
 #include "Types.hpp"
 #include "Hash_Functions.hpp"
+//#include "GenericHashTable.hpp"
 #include <cmath>
 #include <cstddef>
 #include <iostream>
@@ -226,7 +227,7 @@ public:
 };
 
 template<class HASHER, class ALLOC = SLABAllocator>
-class ChainedHashMap {
+class ChainedHashMap : public GenericHashTable {
 
     //Changed.
 public:

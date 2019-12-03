@@ -7,7 +7,7 @@
 
 #ifndef LINEARHASHTABLE_HPP
 #define LINEARHASHTABLE_HPP
-#include "GenericHashTable.hpp"
+//#include "GenericHashTable.hpp"
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>

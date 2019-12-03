@@ -29,14 +29,14 @@ void AdaptiveHashTable::make_hash_table(){
 	} else if (curr_pair.first == "LH") {
  	 	generic_table = new LinearHashTable<int, int, MurmurHash, 0L, false>();
 	} else if (curr_pair.first == "QH") {
-		generic_table = new QuadraticHashTable<int, int, MurmurHash, 0L, false>();
+		//generic_table = new QuadraticHashTable<int, int, MurmurHash, 0L, false>();
 	} else {
 		universal_table_index = -1;
 	}
 
 }
 
-bool AdaptiveHashTable::assess_switching() {
+/*bool AdaptiveHashTable::assess_switching() {
 	//cost function + density
 	if (load_factor < .5) return false;
 	int cost_func = get_read_time() + get_write_time() - get_rehash_time();
@@ -52,4 +52,4 @@ bool AdaptiveHashTable::switch_tables() {
 	if (!assess_switching()) return false;
 	//switch tables`
 	return false;	
-}
+}*/
