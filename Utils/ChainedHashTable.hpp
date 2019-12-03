@@ -405,6 +405,21 @@ public:
             }
         }
     }
+    
+    template<class C>
+    void transferHash (C& new_table) {
+        size_t total = 0;
+        for (size_t i=0; i<arraySize; i++){
+            Entry* p = map[i];
+            if(p) {
+                while (p!= nullptr){
+                    new_table->INS(p->getKey(), p->getValue());
+                    p = p->next;
+                }
+            }
+        }
+    }
+    
 
     size_t size() {
 #ifdef PRINT_STATISTICS

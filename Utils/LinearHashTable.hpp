@@ -103,6 +103,21 @@ public:
             ++pEntry;
         }
     }
+    
+    template<class C>
+    void transferHash(C& new_table) {
+        Entry* pEntry = _table;
+        size_t total = 0;
+        while (pEntry < _table + getTotalNumberOfSlots()) {
+            // <- note below: it will ignore whatever keys equal Empty (ie. 0)
+            if (EXP_TRUE(pEntry->key != EMPTY)) {
+                new_table->INS(pEntry->key, pEntry->value);
+            }
+            ++pEntry;
+        }
+    }
+    
+    
 private:
     void rehash(size_t newSizePow2) {
         //TODO realloc + inplace algorithm?
