@@ -1,0 +1,27 @@
+todo list before Wed presentation: 
+
+
+Slides: 
+  - have a slide that clearly shows the idea behind "adapting"
+    - dynamic resizing: a table that's full and needs to resize, allocate 2x memory and copy elmements over. however, 
+    since we have to allocate room for a whole new table anyway, who says it has to be the same hash implementation? 
+    with new knowledge of the fact that hash tables have distinct performances niches, let's see if we can choose the 
+    right hash table for the job each time, to maximize performance. 
+    
+    
+
+Code: 
+  Overhead experiments: 
+    - plot rehash() time vs transferHash() time for all tables (maybe incl. QP) 
+  
+  LP -> Chained experiment:
+    - make sure we're using CH24
+    - mimic main.cpp for how to make unsucc queries. 
+    - ^if the above don't work, abort and switch to LP->QP
+    
+   LP -> QP Experiment:
+    - confirmation: reproduce results for RW scenario. 
+      - for sparse, QP should be better
+      - for dense, LP should be better
+    - write transferHash() method for QP
+    - conduct actual experiment with switching (okay if hacky/contrived) 
