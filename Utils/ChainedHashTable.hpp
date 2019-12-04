@@ -13,6 +13,7 @@
 #include <cmath>
 #include <cstddef>
 #include <iostream>
+#include "Timer.hpp"
 
 #define CHAIN_KEY 0xFFFFFFFFFFFFFFFFLL
 #define EMPTY_KEY 0x0LL
@@ -277,7 +278,7 @@ public:
         lowWatermark = arraySize * LH_MIN_LOAD_FACTOR;
         
         //changed
-        std::cout<<"arraySize: "<<arraySize<<" highWatermark: "<<highWatermark<<std::endl;
+//        std::cout<<"arraySize: "<<arraySize<<" highWatermark: "<<highWatermark<<std::endl;
     }
 
     ~ChainedHashMap() {
