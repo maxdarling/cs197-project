@@ -1,5 +1,6 @@
 #include <vector>
 #include <any>
+
 class GenericHashTable 
 {
   public:
@@ -9,5 +10,6 @@ class GenericHashTable
     virtual uint64_t get(uint64_t K) = 0;
     virtual void put(uint64_t K, uint64_t H) = 0;	  
     virtual void printElems() = 0;
+    //virtual void transferHash(ChainedHashMap* new_table) = 0;
     virtual ~GenericHashTable(){};
 };

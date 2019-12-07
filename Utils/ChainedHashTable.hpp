@@ -330,7 +330,9 @@ public:
     void put(uint64_t key, uint64_t value) { //MWord
 #ifdef DYNAMIC_GROW
         if (count >= highWatermark) {
-            std::cout<<"rehash from 2^"<<arraySizeLog2<<"to 2^"<<arraySizeLog2+1<<std::endl;
+//            std::cout<<"rehash at "<<count<<"keys"<<std::endl;
+//            std::cout<<"rehash from 2^"<<arraySizeLog2<<"to 2^"<<arraySizeLog2+1<<std::endl;
+            std::cout<<"CH rehashing..."<<std::endl;
             rehash(arraySizeLog2 + 1);
         }
 #endif
@@ -409,11 +411,12 @@ public:
     
     template<class C>
     void transferHash (C& new_table) {
+        std::cout<<"transfer hashing..."<<std::endl;
         for (size_t i=0; i<arraySize; i++){
             Entry* p = map[i];
             if(p) {
                 while (p!= nullptr){
-                    new_table->INS(p->getKey(), p->getValue());
+                    new_table->put(p->getKey(), p->getValue());
                     p = p->next;
                 }
             }

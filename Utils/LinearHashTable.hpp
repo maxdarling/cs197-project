@@ -106,11 +106,12 @@ public:
     
     template<class C>
     void transferHash(C& new_table) {
+        std::cout<<"transfer hashing..."<<std::endl;
         Entry* pEntry = _table;
         while (pEntry < _table + getTotalNumberOfSlots()) {
             // <- note below: it will ignore whatever keys equal Empty (ie. 0)
             if (EXP_TRUE(pEntry->key != EMPTY)) {
-                new_table->INS(pEntry->key, pEntry->value);
+                new_table->put(pEntry->key, pEntry->value);
             }
             ++pEntry;
         }
@@ -119,6 +120,7 @@ public:
     
 private:
     void rehash(size_t newSizePow2) {
+        std::cout<<"LP rehashing..."<<std::endl;
         //TODO realloc + inplace algorithm?
         //TODO vectorization?
         //save old state
