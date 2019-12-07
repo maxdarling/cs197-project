@@ -338,7 +338,31 @@ void experiment4(float ratio) {
     //std::cout<<"LP: "<<(LP_time)<<", CH: "<<(CH_time)<<std::endl;
 }
 
+//test insertion overhead of AHT
+void exp5helper(size_t size, size_t capacity) {
+    GenericHashTable* map = map = new LinearHashTable<int, int, MultiplicativeHash, 0L, false> (std::log2(capacity));
+    
+    //AdaptiveHashTable* map = new AdaptiveHashTable(capacity, "LP");
+    
+    vector<uint64_t> put_keys(size);
+    generateKeys(put_keys, size, "DENSE");
+    
+    double start = getTimeSec();
+    for (int i = 0; i<size-2; i++) {
+        map->put(put_keys[i], i+42);
+    }
+    double end = getTimeSec() - start;
+    
+    std::cout<<"total time: "<<end<<std::endl;
+}
 
+void experiment5() {
+    std::cout<<"start of experiment 5"<<std::endl;
+    int power = 22;
+    size_t size = size_t(pow(2, power-1));
+    size_t capacity = size_t(pow(2, power));
+    exp5helper(size, capacity);
+}
 
 int main(int argc, char*argv[]) {
     
@@ -350,7 +374,9 @@ int main(int argc, char*argv[]) {
     
     //experiment2();
     
-    experiment4(1);
+    //experiment4(1);
+    
+    experiment5();
     
 }
 

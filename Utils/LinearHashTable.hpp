@@ -74,6 +74,14 @@ private:
             rehash(_tableSizeLog2 + 1);
         }
     }
+    
+    bool checkGrow2() {
+        if (EXP_FALSE(_count >= _highWatermark)) {
+            return true;
+            //rehash(_tableSizeLog2 + 1);
+        }
+        return false;
+    }
 
     void init() {
         assert(_tableSizeLog2 >= LH_MIN_SIZE_LOG_2);
@@ -380,6 +388,12 @@ public:
 
     void put(uint64_t key, uint64_t val) { //add error checking!!!!!
         putInternal({(int)key, (int)val});
+    }
+    
+    bool put2(uint64_t key, uint64_t val) {
+        if (checkGrow2()) return true;
+        else putInternal({(int)key, (int)val});
+        return false;
     }
 
     void remove(uint64_t key) {

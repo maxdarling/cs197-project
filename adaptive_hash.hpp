@@ -33,9 +33,10 @@ private:
 	size_t read_time;
 	size_t write_time;
 	size_t universal_table_index;
+    float MAX_LF = 0.5;
 
 public:
-    AdaptiveHashTable(size_t initial_size, std::string type = "LH"):
+    AdaptiveHashTable(size_t initial_size, std::string type = "LP"):
     curr_pair(type, 1),
     lookup_ratio(0),
     load_factor(0),
@@ -63,16 +64,26 @@ public:
 	void make_hash_table();
 	void printElems() {generic_table->printElems();};
 
-	void insert(uint64_t Key, uint64_t Value) {generic_table->put(Key, Value);};
-	void remove(uint64_t Key) {generic_table->remove(Key);};
-	uint64_t lookup(uint64_t Key) {return generic_table->get(Key);};
+	void insert(uint64_t key, uint64_t value);
+	void remove(uint64_t key) {generic_table->remove(key);};
+	uint64_t lookup(uint64_t key) {return generic_table->get(key);};
 	
 	bool assess_switching();
 	bool switch_tables();
 };
 
 
+//if table is full, decides how to rehash
+void AdaptiveHashTable::insert(uint64_t key, uint64_t value) {
+    //true if table full
+    if (generic_table->put2(key, value)) {
+        std::cout<<"adaptive table resizing..."<<std::endl;
 
+        //placeholder
+        std::cout<<"after assessment, table should NOT adapt"<<std::endl;
+        generic_table->put(key, value);
+    }
+}
 
 void AdaptiveHashTable::update_load_factor() {
     load_factor = table_size/table_capacity;
@@ -82,22 +93,23 @@ void AdaptiveHashTable::update_density() {
     table_density = table_size/table_capacity;
 }
 
+//below commented where curr_pair.second != 1, since that indicates hash funciton
+//but we only use mult for this (since paper says mult best for all).
 void AdaptiveHashTable::make_hash_table(){
-    //HashFunc(curr_pair.second)
     if (curr_pair.first == "CH") {
         if (curr_pair.second == 1) generic_table = new ChainedHashMap<MultiplicativeHash>(table_capacity);
 //        else if (curr_pair.second == 2) generic_table = new ChainedHashMap<MultiplyAddHash>();
 //        else if (curr_pair.second == 3) generic_table = new ChainedHashMap<MurmurHash>();
 //        else generic_table = new ChainedHashMap<TabulationHash>();
-    } else if (curr_pair.first == "LH") {
-        if (curr_pair.second == 1) generic_table = new LinearHashTable<int, int, MultiplicativeHash, 0L, false>();
+    } else if (curr_pair.first == "LP") {
+        if (curr_pair.second == 1) generic_table = new LinearHashTable<int, int, MultiplicativeHash, 0L, false>(std::log2(table_capacity));
 //        else if (curr_pair.second == 2) generic_table = new LinearHashTable<int, int, MultiplyAddHash, 0L, false>();
 //        else if (curr_pair.second == 3) generic_table = new LinearHashTable<int, int, MurmurHash, 0L, false>();
 //        else generic_table = new LinearHashTable<int,int, TabulationHash, 0L, false>();
-    } else if (curr_pair.first == "QH") {
+    } else if (curr_pair.first == "QP") {
 //        generic_table = new QuadraticHashTable<int, int, MultiplicativeHash, 0L, false>(); //todo: find last template arg.
     } else {
-        universal_table_index = -1;
+        throw "error - invalid type argument for adaptive table";
     }
 }
 
