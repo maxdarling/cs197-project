@@ -27,7 +27,7 @@ private:
 	std::pair<std::string, size_t> curr_pair;
 	size_t lookup_ratio;
 	size_t load_factor;
-	size_t table_size;
+	size_t count;
 	size_t table_capacity;
 	size_t table_density; // sparse = 0 <= t_d <= 1 = dense
 	size_t read_time;
@@ -40,7 +40,7 @@ public:
     curr_pair(type, 1),
     lookup_ratio(0),
     load_factor(0),
-    table_size(0),
+    count(0),
     table_capacity(initial_size),
     table_density(0),
     read_time(0),
@@ -54,7 +54,7 @@ public:
 	size_t get_density() {return table_density; };
 	size_t get_read_time() {return read_time; };
 	size_t get_write_time() {return write_time; };
-        size_t get_rehash_time() {return write_time*table_size;};	
+        size_t get_rehash_time() {return write_time*count;};
 	//update the appropriate variables
 	void update_load_factor();
 	void update_lookup_ratio();
@@ -75,7 +75,17 @@ public:
 
 //if table is full, decides how to rehash
 void AdaptiveHashTable::insert(uint64_t key, uint64_t value) {
-    //true if table full
+    /*below: count check implementation*/
+//    if (count >= MAX_LF*table_capacity) {
+//        //placeholder
+//        generic_table->put(key, value);
+//    }
+//    else {
+//        generic_table->put3(key, value);
+//    }
+//    count++;
+    
+    /*below: put2 implementation*/
     if (generic_table->put2(key, value)) {
         std::cout<<"adaptive table resizing..."<<std::endl;
 
@@ -86,11 +96,11 @@ void AdaptiveHashTable::insert(uint64_t key, uint64_t value) {
 }
 
 void AdaptiveHashTable::update_load_factor() {
-    load_factor = table_size/table_capacity;
+    load_factor = count/table_capacity;
 }
 
 void AdaptiveHashTable::update_density() {
-    table_density = table_size/table_capacity;
+    table_density = count/table_capacity;
 }
 
 //below commented where curr_pair.second != 1, since that indicates hash funciton

@@ -396,6 +396,39 @@ public:
             *b = e;
         return false;
         }
+    
+    void put3(uint64_t key, uint64_t value) { //MWord
+    #ifdef DYNAMIC_GROW
+//            if (count >= highWatermark) {
+//    //            std::cout<<"rehash at "<<count<<"keys"<<std::endl;
+//    //            std::cout<<"rehash from 2^"<<arraySizeLog2<<"to 2^"<<arraySizeLog2+1<<std::endl;
+//                std::cout<<"CH rehashing..."<<std::endl;
+//                rehash(arraySizeLog2 + 1);
+//            }
+    #endif
+            const size_t idx = hasher(key) >> (hasher.hashBits() - arraySizeLog2);
+            Entry **const b = map + idx;
+            Entry *e = *b;
+            //go through chain to check for duplicate key
+            while (e != nullptr) {
+                if (key == e->key) {
+                    e->value = value;
+                    return;
+                } else {
+                    e = e->next;
+                }
+            }
+            //insert
+            ++count;
+            //alloc new
+
+            e = alloc.newEntry();
+            //setup new
+            e->next = *b;
+            e->key = key;
+            e->value = value;
+            *b = e;
+        }
 
     void remove(uint64_t key) {
 #ifdef DYNAMIC_GROW

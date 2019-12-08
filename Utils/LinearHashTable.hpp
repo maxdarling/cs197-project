@@ -126,7 +126,7 @@ public:
     }
     
     
-private:
+
     void rehash(size_t newSizePow2) {
         std::cout<<"LP rehashing..."<<std::endl;
         //TODO realloc + inplace algorithm?
@@ -154,6 +154,8 @@ private:
         //free old table
         free(static_cast<void *> (oldTable));
     }
+    
+    private:
 
     //--------------------Methods for Robin Hood approach--------------------
     template<bool REHASH = false>
@@ -210,7 +212,62 @@ private:
         return result;
     }
     //----------------END Methods related to Robin Hood approach END----------------
-
+    
+    //copied method to use with put3. removed rehash check.
+    template<bool REHASH = false>
+    Result putInternal_(Entry toInsert) {
+//        if (DYN_GROW && !REHASH) {
+//            checkGrow();
+//        }
+        Result result(false, V());
+        Entry *const tableStart = _table;
+        const uint64_t moduloMask = getTotalNumberOfSlots() - 1;
+        const uint64_t tableSizeLog2 = this->_tableSizeLog2;
+        const uint64_t divisionShift = _hasher.hashBits() - tableSizeLog2;
+        uint64_t curIdx =
+                _hasher(toInsert.key) >> (divisionShift);//TODO change this shift if not using multiplicative hashing?
+        uint64_t toInsertDistance = 0;
+        while (true) {
+            Entry *pEntry = tableStart + curIdx;
+            //Vacant slot found?
+            if (EMPTY == pEntry->key) {
+                *pEntry = toInsert;
+                if (!REHASH) {
+                    ++_count;
+                }
+                break;
+            }
+            //Key already contained?
+            if (!REHASH && (pEntry->key == toInsert.key)) {
+                result.found = true;
+                result.value = pEntry->value;
+                pEntry->value = toInsert.value;
+                break;
+            }
+            //------------ROBIN SWAP--------------------
+            if (ROBIN) {
+                uint64_t distanceOccupant = (curIdx - (_hasher(pEntry->key) >> divisionShift));
+                //is the occupant a candidate for swapping? (smaller distance or on ties we sort by key)
+                if (distanceOccupant < toInsertDistance ||
+                    ((distanceOccupant == toInsertDistance++) && (pEntry->key > toInsert.key))) {
+                    if (!REHASH) {
+                        ++_count;
+                    }
+                    //insert and shift the remaining cluster to right
+                    do {
+                        Entry tmp = toInsert;
+                        toInsert = *pEntry;
+                        *pEntry = tmp;
+                        pEntry = tableStart + ((++curIdx) & (moduloMask));
+                    } while (EMPTY != toInsert.key);
+                    break;
+                }
+            }
+            curIdx = (curIdx + 1) & (moduloMask);
+        }
+        return result;
+    }
+    
 #ifdef SIMD_LOOKUP
 
     template<LHOperation OPERATION = GET>
@@ -390,10 +447,16 @@ public:
         putInternal({(int)key, (int)val});
     }
     
+    //returns bool
     bool put2(uint64_t key, uint64_t val) {
         if (checkGrow2()) return true;
         else putInternal({(int)key, (int)val});
         return false;
+    }
+    
+    //uses putinternal_, which doesn't check for rehash.
+    void put3(uint64_t key, uint64_t val) {
+        putInternal_({(int)key, (int)val});
     }
 
     void remove(uint64_t key) {

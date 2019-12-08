@@ -340,16 +340,16 @@ void experiment4(float ratio) {
 
 //test insertion overhead of AHT
 void exp5helper(size_t size, size_t capacity) {
-    GenericHashTable* map = map = new LinearHashTable<int, int, MultiplicativeHash, 0L, false> (std::log2(capacity));
+    //GenericHashTable* map = map = new LinearHashTable<int, int, MultiplicativeHash, 0L, false> (std::log2(capacity));
     
-    //AdaptiveHashTable* map = new AdaptiveHashTable(capacity, "LP");
+    AdaptiveHashTable* map = new AdaptiveHashTable(capacity, "LP");
     
     vector<uint64_t> put_keys(size);
     generateKeys(put_keys, size, "DENSE");
     
     double start = getTimeSec();
-    for (int i = 0; i<size-2; i++) {
-        map->put(put_keys[i], i+42);
+    for (int i = 0; i<size; i++) {
+        map->insert(put_keys[i], i+42);
     }
     double end = getTimeSec() - start;
     
