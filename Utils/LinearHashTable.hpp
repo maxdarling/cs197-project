@@ -15,6 +15,7 @@
 #include <vector>
 #include "OpenTableConstants.hpp"
 #include <immintrin.h>
+#include "Timer.hpp"
 
 /**
 *
@@ -64,6 +65,7 @@ private:
     size_t n_cache_lines;
     size_t n_accesses;
 #endif
+    double STARTTIME;
 
     enum LHOperation {
         GET, REMOVE
@@ -100,6 +102,10 @@ private:
 #endif
     }
 public:
+    void setStartTime(double s) {
+        STARTTIME = s;
+    }
+    
     void printElems() {
         Entry* pEntry = _table;
         size_t total = 0;
@@ -128,7 +134,7 @@ public:
     
 
     void rehash(size_t newSizePow2) {
-        std::cout<<"LP rehashing..."<<std::endl;
+        //std::cout<<"LP rehashing...(count = "<<_count<<")"<<std::endl;
         //TODO realloc + inplace algorithm?
         //TODO vectorization?
         //save old state
@@ -153,6 +159,8 @@ public:
         }
         //free old table
         free(static_cast<void *> (oldTable));
+        //std::cout<<"end of rehash: "<<(getTimeSec()-STARTTIME)<<std::endl;
+        std::cout<<(getTimeSec()-STARTTIME)<<std::endl;
     }
     
     private:
@@ -531,8 +539,12 @@ public:
     size_t getCount() {
 	    return _count;
     }
-    size_t size/*getCount*/() { //I'm pretty sure this is the size fxn
+    size_t getSize/*getCount*/() {
         return _count;
+    };
+    
+    size_t getCapacity/*getCount*/() {
+        return _totalSlots;
     };
 
     size_t getTotalNumberOfSlots() const {

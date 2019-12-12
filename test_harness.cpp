@@ -9,19 +9,19 @@ using std::string;
 
 
 //given an empty vector (already allocated), insert appropriate keys
-void generateKeys(vector<uint64_t>& keys, size_t size, string dist = "DENSE", size_t begin = 0, size_t end = 0) {
+void generateKeys(vector<uint64_t>& keys, size_t size, string dist = "DENSE", size_t begin = 1, size_t end = -1) {
     std::mt19937 gen(198); //random func with seed as 197.
     
     if (dist == "DENSE") {
-        if (end == 0) end = size;
-        for (int i = begin; i<end; i++) {
-            keys[i] = i+1;
+        if (end == -1) end = size;
+        for (size_t i = 0; i<size; i++) {
+            keys[i] = begin+i;
         }
 //        for (int i = 0; i<size; i++) {
 //            keys[i] = i+1; //b/c 0 isnt valid.
 //        }
         
-        std::shuffle(keys.begin(), keys.end(), gen);
+        //std::shuffle(keys.begin(), keys.end(), gen);
     }
     //todo: generateIndexData() in main.cpp ensures no dupes
     else if (dist == "SPARSE") {
@@ -170,7 +170,7 @@ void exp2_helper(string type = "transfer") {
         time = getTimeSec() - start;
     }
     else if (type == "transfer") {
-        ChainedHashMap<MultiplicativeHash>* new_map = new ChainedHashMap<MultiplicativeHash>(2*map->size());
+        ChainedHashMap<MultiplicativeHash>* new_map = new ChainedHashMap<MultiplicativeHash>(2*map->getSize());
         //((ChainedHashMap<MultiplicativeHash>*)map)->transferHash(new_map);
         ((LinearHashTable<int, int, MultiplicativeHash, 0L, false>*)map)->transferHash(new_map);
         GenericHashTable* trash = map;
@@ -188,87 +188,107 @@ void experiment2() {
     exp2_helper("transfer");
 }
 
+
+
 ////full attempt. doesn't work currently (segfault)
-//double ins_helper(size_t size, size_t capacity, string type, string distr, float unsucc_ratio) {
-//    GenericHashTable* map;
-//    if (type == "LP") {
-//        map = new LinearHashTable<int, int, MultiplicativeHash, 0L, false> (std::log2(capacity)); //care to do log2 here
-//    }
-//    else if (type == "CH") {
-//        map = new ChainedHashMap<MultiplicativeHash>(capacity);
-//    }
-//    else { throw "invalid type arg";}
-//
-//
-//    vector<vector<uint64_t>> ins_keys = {vector<uint64_t>(size), vector<uint64_t>(2*size), vector<uint64_t>(4*size), vector<uint64_t>(8*size)};
-//    size_t begin = 0;
-//    size_t end = size;
-//    for (int i = 0; i<ins_keys.size(); i++){
-//        generateKeys(ins_keys[i], ins_keys[i].size(), "DENSE", begin, end);
-//        begin = size+1;
-//        end = 2*size;
-//    }
-//
-//    vector<uint64_t> keys(size);
-//    generateKeys(keys, size, distr);
-//
-//    vector<uint64_t> lookup_keys = keys; //<-todo: make this an array, mimicking ins_keys
-//
-//    //plant fail keys
-//    if (unsucc_ratio > 0) {
-//        std::random_shuffle(lookup_keys.begin(), lookup_keys.end());
-//        size_t numFailKeys = size * unsucc_ratio;
-//        std::mt19937_64 gen(325246);
-//        unsigned long long int max = ~0ULL;
-//        std::uniform_int_distribution<MWord> dis_key(1, max);
-//        for (size_t i = 0; i < numFailKeys; ++i) {
-//            lookup_keys[i] = dis_key(gen);
-//        }
-//    }
-//    std::random_shuffle(lookup_keys.begin(), lookup_keys.end());
-//
-//
-//    //step2: perform lookups
-//    //size_t num_operations = 16*size;
-//    std::cout<<"got here!"<<std::endl;
-//    double start = getTimeSec();
-//
-//
-//    for (int j = 0; j<ins_keys.size(); j++){
-//        //below: method 2 - custom
-//        int ratio = 4; //lookup/ins
-//        size_t num_operations = ratio * ins_keys[j].size();
-//        for (size_t i = 0; i<num_operations; i++){
-//            std::cout<<"("<<j<<", "<<i<<")"<<std::endl;
-//            if (i%ratio == 0){ //every 'ratio' # of iters, perform an insert
-//                map->put(ins_keys[j][i/ratio], i+42);
-//            }
-//            else {
-//                map->get(lookup_keys[i/ratio]); //lookup same key 'ratio' times
-//            }
-//        }
-//    }
-//
-//
-//    double time = getTimeSec() - start;
-//    //std::cout<<type<<" - time elapsed: "<<time<<std::endl;
-//    std::cout<<time<<std::endl;
-//    return time;
-//}
-//
-////test the ratio of insertions to lookups that will still yield results from exp. 1
-//void experiment3(float ratio) {
-//    std::cout<<"start of experiment 3 w/ ratio "<<ratio<<std::endl;
-//    //size_t size = 1000000;
-//    int power = 18;
-//    size_t size = size_t(pow(2,power-1));
-//    size_t capacity = size_t(pow(2,power));
-//
-//    double LP_time = ins_helper(size, capacity, "LP", "DENSE", ratio);
-//    double CH_time = ins_helper(size, capacity, "CH", "DENSE", ratio);
-//
-//    std::cout<<"LP: "<<(LP_time)<<", CH: "<<(CH_time)<<std::endl;
-//}
+double ins_helper(size_t size, size_t capacity, string type, string distr, int ratio) {
+    GenericHashTable* map;
+    //AdaptiveHashTable* map;
+    if (type == "LP" || type == "AHT1") {
+        map = new LinearHashTable<int, int, MultiplicativeHash, 0L, false> (std::log2(capacity)); //care to do log2 here
+    }
+    else if (type == "CH") {
+        map = new ChainedHashMap<MultiplicativeHash>(capacity);
+    }
+
+    else { throw "invalid type arg";}
+
+    //(0,2) -> (1,2) -> (1,4) -> (2,4) -> (2,8) -> (4,8) -> (4,16) -> etc...
+    //STEP1: generate the insert keys (ranges so they don't overlap!)
+    vector<vector<uint64_t>> ins_keys = {vector<uint64_t>(size), vector<uint64_t>(size), vector<uint64_t>(2*size), vector<uint64_t>(4*size), vector<uint64_t>(8*size)};
+    size_t begin = 1;
+    size_t end = size;
+    for (int i = 0; i<ins_keys.size(); i++){
+        generateKeys(ins_keys[i], ins_keys[i].size(), "DENSE", begin, end);
+        begin = end+1;
+        end *= 2;
+    }
+
+
+    //STEP2: generate lookup keys (increasing unsucc ratios, from 0.0-1.0)
+    vector<vector<uint64_t>> lookup_keys = ins_keys;
+    for (int i = 0; i<lookup_keys.size(); i++) {
+        float unsucc_ratio = i*0.25; //0 to 1.0
+        std::random_shuffle(lookup_keys[i].begin(), lookup_keys[i].end());
+        size_t numFailKeys = lookup_keys[i].size() * unsucc_ratio;
+        std::mt19937_64 gen(325246);
+        unsigned long long int max = ~0ULL;
+        std::uniform_int_distribution<MWord> dis_key(1, max);
+        for (size_t j = 0; j < numFailKeys; ++j) {
+            lookup_keys[i][j] = dis_key(gen);
+        }
+    }
+
+    //step2: perform lookups
+    std::cout<<"end of preprocessing, starting experiments..."<<std::endl;
+    double start = getTimeSec();
+    map->setStartTime(start); //in order for rehash to print time internally
+
+    int resize_count = 0;
+    for (int j = 0; j<ins_keys.size(); j++){
+        if (ins_keys[j].size() != lookup_keys[j].size()) throw "mismatching sizes!";
+        
+        if (type == "AHT1" && j == 3) {
+            GenericHashTable* new_map = new ChainedHashMap<MultiplicativeHash>(map->getCapacity()*2);
+            ((LinearHashTable<int, int, MultiplicativeHash, 0L, false>*)map)->transferHash(new_map);
+            GenericHashTable* trash = map;
+            map = new_map;
+            map->setStartTime(start);
+            free(trash);
+        }
+        //ratio = 1;
+        //std::cout<<"iter #"<<j<<std::endl;
+        size_t num_operations = ratio * ins_keys[j].size();
+
+        for (size_t i = 0; i<num_operations; i++){ //-1 for rehash control l8r
+
+            if (i%ratio == 0){ //every 'ratio' # of iters, perform an insert
+                map->put(ins_keys[j][i/ratio], i+42);
+                //bool a = map->put2(ins_keys[j][i/ratio], i+42);
+                //resize_count += a == true;
+            }
+            else {
+                map->get(lookup_keys[j][i/ratio]);
+            }
+        }
+        //std::cout<<"end of iter #"<<j<<", time: "<<(getTimeSec()-start)<<std::endl;
+        //std::cout<<"end of iter #"<<j<<std::endl;
+        std::cout<<(getTimeSec()-start)<<std::endl;
+        //rehash follows this inside class...
+    }
+
+    double time = getTimeSec() - start;
+    //std::cout<<type<<" - time elapsed: "<<time<<std::endl;
+    std::cout<<type<<" total time: "<<time<<std::endl;
+    return time;
+}
+
+//test the ratio of insertions to lookups that will still yield results from exp. 1
+void experiment3(float ratio) {
+    std::cout<<"start of experiment 3"<<std::endl;
+    //size_t size = 1000000;
+    int power = 18;
+    size_t size = size_t(pow(2,power-1));
+    size_t capacity = size_t(pow(2,power));
+
+    
+    double CH_time = ins_helper(size, capacity, "CH", "DENSE", ratio);
+    double LP_time = ins_helper(size, capacity, "LP", "DENSE", ratio);
+    double AHT1_time = ins_helper(size, capacity, "AHT1", "DENSE", ratio);
+    
+
+    std::cout<<"LP: "<<(LP_time)<<", CH: "<<(CH_time)<<", AHT1: "<<(AHT1_time)<<std::endl;
+}
 
 
 //slightly modified lookup_helper
@@ -364,19 +384,52 @@ void experiment5() {
     exp5helper(size, capacity);
 }
 
+void debugCH() {
+    int power = 2;
+    size_t size = size_t(pow(2,power-1));
+    size_t capacity = size_t(pow(2,power));
+    
+    vector<vector<uint64_t>> ins_keys = {vector<uint64_t>(size), vector<uint64_t>(size), vector<uint64_t>(2*size), vector<uint64_t>(4*size), vector<uint64_t>(8*size)};
+    size_t begin = 1;
+    size_t end = size;
+    for (int i = 0; i<ins_keys.size(); i++){
+        generateKeys(ins_keys[i], ins_keys[i].size(), "DENSE", begin, end);
+        begin = end+1;
+        end *= 2;
+    }
+    
+    for (int i = 0; i<ins_keys.size(); i++) {
+        //std::cout<<"hi"<<std::endl;
+        //std::cout<<ins_keys[i][0]<<", "<<ins_keys[i][ins_keys[i].size()-1]<<std::endl;
+        for (size_t key: ins_keys[i])
+            std::cout<<key<<", ";
+        std::cout<<std::endl;
+    }
+    
+    GenericHashTable* map = new ChainedHashMap<MultiplicativeHash>(capacity);
+    for (int i = 0; i<size*5; i++) {
+        map->put(i, i+42);
+    }
+}
+
+
+
 int main(int argc, char*argv[]) {
     
     //experiment1(0);
     
     //experiment2();
     
-    //experiment3(0.00);
     
     //experiment2();
     
     //experiment4(1);
     
-    experiment5();
+    //experiment5();
+    
+    experiment3(20);
+    
+    //debugCH();
     
 }
 

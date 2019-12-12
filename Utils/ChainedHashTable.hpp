@@ -243,9 +243,14 @@ private:
     ALLOC alloc;
     size_t highWatermark;
     size_t lowWatermark;
+    double STARTTIME;
 
 
 public:
+    void setStartTime(double s) {
+        STARTTIME = s;
+    }
+    
     ChainedHashMap() : map(new Entry *[1 << 10]), arraySize(1 << 10), arraySizeLog2(10), count(0), alloc(1 << 10) {
         throw;
     }
@@ -308,6 +313,7 @@ public:
         map = newMap;
         highWatermark = arraySize * LH_MAX_LOAD_FACTOR;
         lowWatermark = arraySize * LH_MIN_LOAD_FACTOR;
+        
     }
 
 
@@ -332,8 +338,10 @@ public:
         if (count >= highWatermark) {
 //            std::cout<<"rehash at "<<count<<"keys"<<std::endl;
 //            std::cout<<"rehash from 2^"<<arraySizeLog2<<"to 2^"<<arraySizeLog2+1<<std::endl;
-            std::cout<<"CH rehashing..."<<std::endl;
+            //std::cout<<"CH rehashing...(count = "<<count<<")"<<std::endl;
             rehash(arraySizeLog2 + 1);
+            //std::cout<<"end of rehash: "<<(getTimeSec()-STARTTIME)<<std::endl;
+            std::cout<<(getTimeSec()-STARTTIME)<<std::endl;
         }
 #endif
         const size_t idx = hasher(key) >> (hasher.hashBits() - arraySizeLog2);
@@ -462,6 +470,14 @@ public:
     
     //Changed
     uint64_t getArraySize() {
+        return arraySize;
+    }
+    
+    size_t getSize() {
+        return count;
+    }
+    
+    size_t getCapacity() {
         return arraySize;
     }
     
