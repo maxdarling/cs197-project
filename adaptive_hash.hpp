@@ -25,7 +25,7 @@ private:
 	GenericHashTable* generic_table;
 	int distrType; //Dense = -1, Sparse = 0, Grid = 1
 	std::pair<std::string, size_t> curr_pair;
-	size_t lookup_ratio;
+	pair<uint64_t, uint64_t> lookup_ratio; //first = numerator; second = denominator
 	size_t load_factor;
 	size_t table_size;
 	size_t table_capacity;
@@ -38,7 +38,7 @@ private:
 public:
     AdaptiveHashTable(size_t initial_size, std::string type = "LP"):
     curr_pair(type, 1),
-    lookup_ratio(0),
+    lookup_ratio(0,0),
     load_factor(0),
     table_size(0),
     table_capacity(initial_size),
@@ -54,7 +54,7 @@ public:
 	size_t get_density() {return table_density; };
 	size_t get_read_time() {return read_time; };
 	size_t get_write_time() {return write_time; };
-        size_t get_rehash_time() {return write_time*table_size;};	
+    size_t get_rehash_time() {return write_time*table_size;};	
 	//update the appropriate variables
 	void update_load_factor();
 	void update_lookup_ratio();
@@ -66,8 +66,11 @@ public:
 
 	void insert(uint64_t key, uint64_t value);
 	void remove(uint64_t key) {generic_table->remove(key);};
-	uint64_t lookup(uint64_t key) {return generic_table->get(key);};
-	
+	uint64_t lookup(uint64_t key) {
+        pair<bool, uint64_t> get_val = generic_table->get(key); 
+        update_lookup_ratio(!get_val.first); 
+        return generic_table->get(key);
+    };
 	bool assess_switching();
 	bool switch_tables();
 };
@@ -78,11 +81,15 @@ void AdaptiveHashTable::insert(uint64_t key, uint64_t value) {
     //true if table full
     if (generic_table->put2(key, value)) {
         std::cout<<"adaptive table resizing..."<<std::endl;
-
         //placeholder
         std::cout<<"after assessment, table should NOT adapt"<<std::endl;
         generic_table->put(key, value);
     }
+}
+
+void AdaptiveHashTable::update_lookup_ratio(bool success) {
+    lookup_ratio.second++;
+    if (success) lookup_ratio.first++;
 }
 
 void AdaptiveHashTable::update_load_factor() {
@@ -97,30 +104,25 @@ void AdaptiveHashTable::update_density() {
 //but we only use mult for this (since paper says mult best for all).
 void AdaptiveHashTable::make_hash_table(){
     if (curr_pair.first == "CH") {
-        if (curr_pair.second == 1) generic_table = new ChainedHashMap<MultiplicativeHash>(table_capacity);
-//        else if (curr_pair.second == 2) generic_table = new ChainedHashMap<MultiplyAddHash>();
-//        else if (curr_pair.second == 3) generic_table = new ChainedHashMap<MurmurHash>();
-//        else generic_table = new ChainedHashMap<TabulationHash>();
+        generic_table = new ChainedHashMap<MultiplicativeHash>(table_capacity);
     } else if (curr_pair.first == "LP") {
-        if (curr_pair.second == 1) generic_table = new LinearHashTable<int, int, MultiplicativeHash, 0L, false>(std::log2(table_capacity));
-//        else if (curr_pair.second == 2) generic_table = new LinearHashTable<int, int, MultiplyAddHash, 0L, false>();
-//        else if (curr_pair.second == 3) generic_table = new LinearHashTable<int, int, MurmurHash, 0L, false>();
-//        else generic_table = new LinearHashTable<int,int, TabulationHash, 0L, false>();
+        generic_table = new LinearHashTable<int, int, MultiplicativeHash, 0L, false>(std::log2(table_capacity));
     } else if (curr_pair.first == "QP") {
-//        generic_table = new QuadraticHashTable<int, int, MultiplicativeHash, 0L, false>(); //todo: find last template arg.
+        generic_table = new QuadraticHashTable<int, int, MultiplicativeHash, 0L, false>(); //TODO: find last template arg.
     } else {
         throw "error - invalid type argument for adaptive table";
     }
 }
 
 bool AdaptiveHashTable::assess_switching() {
-    //cost function + density
+    //cost function
     if (load_factor < .5) return false;
     int cost_func = get_read_time() + get_write_time() - get_rehash_time();
+    //density dimension
     size_t original_density = table_density;
     update_density();
-    bool density_changed = original_density;
-    //bool density_changed = abs(original_density-table_density) > (.5*original_density);
+    bool density_changed = abs(table_density-original_density) >= 0.5;
+    //if the data distribution is too dense OR lookup ratio is too low
     if (cost_func > 0 || density_changed) return true;
     return false;
 }

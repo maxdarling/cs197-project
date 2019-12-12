@@ -386,8 +386,8 @@ public:
         throw; //TODO
     }
 
-    void put(uint64_t key, uint64_t val) { //add error checking!!!!!
-        putInternal({(int)key, (int)val});
+    bool put(uint64_t key, uint64_t val) { //add error checking!!!!!
+        return putInternal({(int)key, (int)val}).found;
     }
     
     bool put2(uint64_t key, uint64_t val) {
@@ -400,9 +400,10 @@ public:
         getInternal<REMOVE>(key);
     }
 
-    uint64_t  get(uint64_t key) {
+    uint64_t get(uint64_t key) {
         auto nonConstThisP = const_cast<LinearHashTable<K, V, H, EMPTY, ROBIN> *> (this);
-        return (uint64_t)nonConstThisP->getInternal(key).value;
+        return pair<bool, uint64_t>(nonConstThisP->getInternal(key).found,
+                                    (uint64_t)nonConstThisP->getInternal(key).value);
     }
 
     V &operator[](K key) {
