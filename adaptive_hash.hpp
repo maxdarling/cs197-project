@@ -24,7 +24,7 @@ class AdaptiveHashTable{
 private:
 	GenericHashTable* generic_table;
 	int distrType; //Dense = -1, Sparse = 0, Grid = 1
-	std::pair<std::string, size_t> curr_pair;
+    string type = "LP";
 	pair<uint64_t, uint64_t> lookup_ratio; //first = numerator; second = denominator
 	size_t load_factor;
 	size_t table_size;
@@ -37,7 +37,6 @@ private:
 
 public:
     AdaptiveHashTable(size_t initial_size, std::string type = "LP"):
-    curr_pair(type, 1),
     lookup_ratio(0,0),
     load_factor(0),
     table_size(0),
@@ -51,10 +50,7 @@ public:
 	size_t get_lookup_ratio() {return lookup_ratio; };
 	size_t get_load_factor() {return load_factor; };
 	size_t get_table_capacity() {return table_capacity; };
-	size_t get_density() {return table_density; };
-	size_t get_read_time() {return read_time; };
-	size_t get_write_time() {return write_time; };
-    size_t get_rehash_time() {return write_time*table_size;};	
+	size_t get_density() {return table_density; };	
 	//update the appropriate variables
 	void update_load_factor();
 	void update_lookup_ratio();
@@ -117,13 +113,18 @@ void AdaptiveHashTable::make_hash_table(){
 bool AdaptiveHashTable::assess_switching() {
     //cost function
     if (load_factor < .5) return false;
-    int cost_func = get_read_time() + get_write_time() - get_rehash_time();
+
+    //lookup ratio dimension
+    double ratio = lookup_ratio.second == 0 ? 0 : lookup_ratio.first/lookup_ratio.second;
+    bool ratio_bad = ratio < .5;
+
     //density dimension
     size_t original_density = table_density;
     update_density();
     bool density_changed = abs(table_density-original_density) >= 0.5;
+
     //if the data distribution is too dense OR lookup ratio is too low
-    if (cost_func > 0 || density_changed) return true;
+    if (ratio_bad || density_changed) return true;
     return false;
 }
 
