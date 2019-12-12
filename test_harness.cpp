@@ -360,7 +360,7 @@ void experiment4(float ratio) {
 
 //test insertion overhead of AHT
 void exp5helper(size_t size, size_t capacity) {
-    //GenericHashTable* map = map = new LinearHashTable<int, int, MultiplicativeHash, 0L, false> (std::log2(capacity));
+    GenericHashTable* map = new LinearHashTable<int, int, MultiplicativeHash, 0L, false> (std::log2(capacity));
     
     AdaptiveHashTable* map = new AdaptiveHashTable(capacity, "LP");
     
