@@ -1,0 +1,57 @@
+CXX=clang++
+CC=clang
+
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S),Linux)
+
+	CFLAGS=-m64 -std=c++11 -c -Wall -x c++ -g3 -O3 -restrict
+	LDFLAGS=-m64 -g3 -O3 ../utils/judy_lib/lib64/libJudy.a /opt/intel/vtune_amplifier_xe/lib64/libittnotify.a -lpthread
+	INC_DIRS=/opt/intel/vtune_amplifier_xe_2013/include ../utils/google_hashes/include ./include/Adapter ./include/Util ./include/Structures ./include/Structures/JudyL ./include/Structures/ArtCpp ./include/Structures/ArtAnsiC ./include/Structures/Fast ./include/Structures/Cuckoo
+
+endif
+ifeq ($(UNAME_S),Darwin)
+
+	CFLAGS=-march=native -std=c++11 -stdlib=libc++ -m64 -c -Wall -x c++ -g3 -O3
+	LDFLAGS=-march=native -stdlib=libc++ -g3 -O3
+	INC_DIRS=./include/Adapter ./include/Util ./include/Structures ./include/Structures/JudyL ./include/Structures/ArtCpp ./include/Structures/ArtAnsiC ./include/Structures/Fast ./include/Structures/Cuckoo
+
+endif
+
+
+#CXX=g++-mp-4.8
+#CFLAGS=-std=c++11 -m64 -c -Wall -x c++ -g3 -O3
+#LDFLAGS=-m64 ../fat_pointers_64bit/judy_lib/lib/libJudy.a
+#INC_DIRS=../fat_pointers_64bit/google_hashes/include ./include/Adapter ./include/Util ./include/Structures ./include/Structures/JudyL ./include/Structures/ArtCpp ./include/Structures/ArtAnsiC ./include/Structures/Fast ./include/Structures/Cuckoo
+
+#CXX=clang++
+#CFLAGS=-m64 -g -c -Wall -x c++ -Ofast -std=c++11 -stdlib=libc++
+#LDFLAGS=-m64 -g ./lib/libJudy64.a
+#INC_DIRS=./include/Adapter ./include/Util ./include/Structures ./include/Structures/JudyL ./include/Structures/ArtCpp ./include/Structures/ArtAnsiC ./include/Structures/Cuckoo ./include/Structures/Fast
+
+INC_PARAMS=$(foreach d, $(INC_DIRS), -I$d)
+SOURCES= $(shell find src -type f \( -iname "*.cpp" ! -iname "Bench*.*" \))
+HEADERS= $(shell find $(INC_DIRS) -type f \( -iname "*.h" -or -iname "*.hpp" ! -iname "Bench*.*" \))
+#OBJECTS=$(SOURCES:.cpp=.o)
+OBJECTS=$(patsubst src%.cpp,build%.o, $(SOURCES))
+EXECUTABLE=main
+
+all: $(SOURCES) $(EXECUTABLE) types
+	
+$(EXECUTABLE): $(OBJECTS) 
+	$(CXX) $(OBJECTS) $(LDFLAGS) -o $@
+	
+build/%.o: src/%.cpp
+	mkdir -p $(dir $@)
+	$(CXX) $(CFLAGS) $(INC_PARAMS) $< -o $@
+	
+.PHONY: clean
+clean:
+	rm -rf build $(EXECUTABLE) .types.vim;
+
+types: .types.vim
+
+.types.vim: $(SOURCES) $(HEADERS)
+	ctags --c-kinds=degmpstu -o- $(SOURCES) $(HEADERS) |\
+		awk 'BEGIN{printf("syntax keyword Type\t")}\
+			{printf("%s ", $$1)}END{print ""}' > $@

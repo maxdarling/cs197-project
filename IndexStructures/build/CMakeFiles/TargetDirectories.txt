@@ -1,0 +1,3 @@
+/Users/max/CS/Courses/197/IndexStructures/build/CMakeFiles/IndexStructure.dir
+/Users/max/CS/Courses/197/IndexStructures/build/CMakeFiles/ALL_BUILD.dir
+/Users/max/CS/Courses/197/IndexStructures/build/CMakeFiles/ZERO_CHECK.dir
